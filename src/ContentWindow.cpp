@@ -33,6 +33,13 @@ void ContentWindow::setBold( bool mode )
         wattroff( m_window, A_BOLD );
 }
 
+void ContentWindow::setReverse( bool mode )
+{
+    if ( mode )
+        wattron( m_window, A_REVERSE );
+    else
+        wattroff( m_window, A_REVERSE );
+}
 void ContentWindow::setColor( int color, bool mode )
 {
     if ( mode )

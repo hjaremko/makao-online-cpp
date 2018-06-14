@@ -17,6 +17,7 @@ class ContentWindow : public Window
 
         void draw();
         void setBold( bool );
+        void setReverse( bool );
         void setColor( int, bool );
         void scroll( int );
 

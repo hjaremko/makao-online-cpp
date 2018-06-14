@@ -30,7 +30,6 @@ LogWindow& operator<<( LogWindow& log, const std::string& t_message )
 LogWindow::LogWindow( int t_height, int t_width, int t_starty, int t_startx ) 
                     : ContentWindow( t_height, t_width, t_starty, t_startx )
 {
-    draw();
 }
 
 void LogWindow::newMessage( const std::string& t_message )

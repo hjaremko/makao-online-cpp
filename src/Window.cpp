@@ -55,16 +55,6 @@ void Window::drawBorder()
     wrefresh( m_window );
 }
 
-// void Window::changeContent( const int i, const std::string t_str )
-// {
-//     contents[ i ] = t_str;
-// }
-
-// std::string Window::getContent( int i ) const
-// {
-//     return contents[ i ];
-// }
-
 WINDOW* Window::getWindow() const
 {
     return m_window;

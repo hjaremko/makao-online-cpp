@@ -4,8 +4,6 @@
 #include <curses.h>
 #include "ContentWindow.hpp"
 
-const std::string currentDateTime();
-
 class LogWindow : public ContentWindow
 {
     public:
@@ -16,6 +14,6 @@ class LogWindow : public ContentWindow
         friend LogWindow& operator<<( LogWindow&, const int );
         
     private:
-        void newMessage( const std::string& );
+        virtual void newMessage( const std::string& );
 };
 
