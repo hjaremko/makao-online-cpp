@@ -4,16 +4,19 @@
 #include <string>
 #include "LogWindow.hpp"
 
-class MenuWindow : public LogWindow
+namespace ncwindows
 {
-    public:
-        MenuWindow( int, int, int, int );
-        void draw();
-        void newMessage( const std::string& );
-        void selectDown();
-        void selectUp();
-        int selectLoop( char );
+    class MenuWindow : public LogWindow
+    {
+        public:
+            MenuWindow( int, int, int, int );
+            void draw();
+            void newMessage( const std::string& );
+            void selectDown();
+            void selectUp();
+            int selectLoop( char );
 
-    private:
-        int m_selected{ 0 };
-};
+        private:
+            int m_selected{ 0 };
+    };
+}
