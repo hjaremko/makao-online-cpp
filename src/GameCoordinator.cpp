@@ -2,7 +2,7 @@
 
 namespace makao
 {
-    GameCoordinator::GameCoordinator( ncwindows::LogWindow* t_log ) : m_log( t_log )
+    GameCoordinator::GameCoordinator()
     {
         m_socket.setBlocking( false );
     }
@@ -27,6 +27,8 @@ namespace makao
 
     void GameCoordinator::listen()
     {
+        // std::cout << "Listening." << std::endl;
+
         Server tmp;
 
         if ( receive( tmp ) && tmp.name != "**PING**" )
@@ -40,19 +42,17 @@ namespace makao
             }
             else
             {
-                // std::cerr << tmp.name << " connected." << std::endl;
-                *m_log << std::string( tmp.name + " connected." );
+                std::cerr << tmp.name << " connected." << std::endl;
                 m_activeServers.push_back( tmp );
             }
         }
         else if ( tmp.name == "**PING**" )
         {
-            // std::cerr << tmp.ip.toString() << " requested server list." << std::endl;
-            *m_log << std::string( tmp.ip.toString() + " requested server list." );
+            std::cerr << tmp.ip.toString() << " requested server list." << std::endl;
         }
 
         for ( std::vector<Server>::iterator server = m_activeServers.begin(); 
-                  server != m_activeServers.end(); ++server )
+              server != m_activeServers.end(); ++server )
         {
             if ( tmp.name == "**PING**" )
             {
@@ -61,10 +61,9 @@ namespace makao
                 tmpP.send( &m_socket, tmp.ip, tmp.port );
             }
 
-            if ( server->getElapsedTime() > 60.0 )
+            if ( server->getElapsedTime() > 30.0 )
             {
-                // std::cerr << server->name << " disconnected." << std::endl;
-                *m_log << std::string( server->name + " disconnected." );
+                std::cerr << server->name << " disconnected." << std::endl;
 
                 m_activeServers.erase( server );
                 break;
@@ -89,7 +88,8 @@ namespace makao
         }
         else
         {
-            t_message.getFromPacket( packet );
+            // t_message.getFromPacket( packet );
+            packet >> t_message;
             // std::cerr << "Received: \"" << message.name << "\" from " << sender.toString() << std::endl;
 
             return true;

@@ -3,7 +3,6 @@
 #include <vector>
 #include <iostream>
 #include <SFML/Network.hpp>
-#include "ncwindows"
 #include "Server.hpp"
 #include "ServerPacket.hpp"
 
@@ -12,7 +11,7 @@ namespace makao
     class GameCoordinator
     {
         public:
-            GameCoordinator( ncwindows::LogWindow* );
+            GameCoordinator();
             ~GameCoordinator();
 
             bool bindSocket( const unsigned short );
@@ -25,6 +24,5 @@ namespace makao
             std::vector<sf::UdpSocket*> m_sockets;
             std::vector<Server> m_activeServers;
             sf::SocketSelector m_selector;
-            ncwindows::LogWindow* m_log;
     };
 }

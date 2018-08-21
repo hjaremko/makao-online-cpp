@@ -6,7 +6,7 @@
 
 namespace makao
 {
-    class ServerPacket;
+    // class ServerPacket;
     
     class Server
     {
@@ -14,18 +14,19 @@ namespace makao
             std::string name;
             sf::IpAddress ip;
             unsigned short port;
-            int freeSlots = 4;
+            int freeSlots;
+            int maxSlots;
 
             Server();
-            Server( sf::IpAddress, unsigned short, std::string );
-            Server( sf::IpAddress, unsigned short, std::string, int );
+            // Server( sf::IpAddress, unsigned short, std::string );
+            Server( sf::IpAddress, unsigned short, std::string, int = 4 );
 
             bool operator==( const Server );
             std::string getInfo() const;
             float getElapsedTime() const;
             void setIp( std::string );
             void restartClock();
-            void getFromPacket( ServerPacket& );
+            // void getFromPacket( ServerPacket& );
 
         private:
             sf::Clock m_timeout;

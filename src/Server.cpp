@@ -8,14 +8,14 @@ namespace makao
 
     }
 
-    Server::Server( sf::IpAddress t_ip, unsigned short t_port, std::string t_name ) 
-                  : ip( t_ip ), port( t_port ), name( t_name )
-    {
+    // Server::Server( sf::IpAddress t_ip, unsigned short t_port, std::string t_name ) 
+    //               : ip( t_ip ), port( t_port ), name( t_name )
+    // {
 
-    }
+    // }
 
     Server::Server( sf::IpAddress t_ip, unsigned short t_port, std::string t_name, int t_slots )
-                  : ip( t_ip ), port( t_port ), name( t_name ), freeSlots( t_slots )
+                  : ip( t_ip ), port( t_port ), name( t_name ), maxSlots( t_slots ), freeSlots( t_slots )
     {
 
     }
@@ -39,7 +39,8 @@ namespace makao
 
     std::string Server::getInfo() const
     {
-        return ( name + " " + ip.toString() ); 
+        // return ( name + " " + ip.toString() + " " + std::to_string( freeSlots ) + "/?" ); 
+        return ( name + " " + std::to_string( freeSlots ) + "/" + std::to_string( maxSlots ) ); 
     }
 
     float Server::getElapsedTime() const
@@ -52,10 +53,10 @@ namespace makao
         m_timeout.restart();
     }
 
-    void Server::getFromPacket( ServerPacket& t_packet )
-    {
-        std::string tmpIp;
-        t_packet >> tmpIp >> port >> name >> freeSlots;
-        ip = tmpIp;
-    }
+    // void Server::getFromPacket( ServerPacket& t_packet )
+    // {
+    //     std::string tmpIp;
+    //     t_packet >> tmpIp >> port >> name >> freeSlots;
+    //     ip = tmpIp;
+    // }
 }

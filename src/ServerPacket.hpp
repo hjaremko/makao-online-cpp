@@ -11,6 +11,8 @@ namespace makao
     {
         public:
             friend ServerPacket& operator<<( ServerPacket&, const Server& );
+            friend ServerPacket& operator>>( ServerPacket&, Server& );
+
 
             ServerPacket();
 
