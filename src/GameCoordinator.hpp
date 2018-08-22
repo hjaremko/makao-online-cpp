@@ -14,15 +14,15 @@ namespace makao
             GameCoordinator();
             ~GameCoordinator();
 
-            bool bindSocket( const unsigned short );
-            bool receive( auto& );
             void listen();
             int getActiveServers() const;
+            bool bindSocket( const unsigned short );
+            bool receive( auto& );
         
         private:
             sf::UdpSocket m_socket;
+            sf::SocketSelector m_selector;
             std::vector<sf::UdpSocket*> m_sockets;
             std::vector<Server> m_activeServers;
-            sf::SocketSelector m_selector;
     };
 }

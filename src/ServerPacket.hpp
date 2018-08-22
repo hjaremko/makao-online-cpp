@@ -1,7 +1,9 @@
 #pragma once
 
 #include <iostream>
+
 #include <SFML/Network.hpp>
+
 #include "Server.hpp"
 
 namespace makao
@@ -12,7 +14,6 @@ namespace makao
         public:
             friend ServerPacket& operator<<( ServerPacket&, const Server& );
             friend ServerPacket& operator>>( ServerPacket&, Server& );
-
 
             ServerPacket();
 

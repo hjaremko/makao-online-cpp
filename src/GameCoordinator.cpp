@@ -38,6 +38,7 @@ namespace makao
             if ( isPresent != m_activeServers.end() )
             {
                 // std::cerr << isPresent->name << " tick!" << std::endl;
+                *isPresent = tmp;
                 isPresent->restartClock();
             }
             else

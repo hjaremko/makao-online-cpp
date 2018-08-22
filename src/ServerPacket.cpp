@@ -1,12 +1,11 @@
 #include "ServerPacket.hpp"
 
-
 namespace makao
 {
     ServerPacket& operator<<( ServerPacket& t_packet, const Server& t_server )
     {
         t_packet << t_server.ip.toString() << t_server.port 
-                 << t_server.name << t_server.freeSlots << t_server.maxSlots;
+                 << t_server.name << t_server.takenSlots << t_server.maxSlots;
                  
         return t_packet;
     }
@@ -14,7 +13,7 @@ namespace makao
     ServerPacket& operator>>( ServerPacket& t_packet, Server& t_server )
     {
         std::string tmpIp;
-        t_packet >> tmpIp >> t_server.port >> t_server.name >> t_server.freeSlots >> t_server.maxSlots;
+        t_packet >> tmpIp >> t_server.port >> t_server.name >> t_server.takenSlots >> t_server.maxSlots;
         t_server.ip = tmpIp;
                  
         return t_packet;
