@@ -86,7 +86,7 @@ namespace makao
             void makeDecks( int );
 
             std::vector<std::shared_ptr<Player>> m_players;
-            std::unique_ptr<Deck> m_drawingDeck;
-            std::unique_ptr<Deck> m_playingDeck;
+            std::shared_ptr<Deck> m_drawingDeck{ std::make_shared<Deck>() };
+            std::shared_ptr<Deck> m_playingDeck{ std::make_shared<Deck>() };
     };
 }

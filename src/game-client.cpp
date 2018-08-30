@@ -128,6 +128,7 @@ int main( int argc, char const *argv[] )
                         Game game;
                         std::cout << "Waiting for game packet..." << std::endl;
                         tcpSocket.receive( gamePacket );
+                        std::cout << "Got the packet." << std::endl;
                         gamePacket >> game;
 
                         game.print( id );

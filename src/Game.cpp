@@ -1,7 +1,9 @@
 #include <iostream>
+#include <exception>
 
 #include "Game.hpp"
 #include "Deck.hpp"
+#include "LostConnectionException.hpp"
 
 namespace makao
 {
@@ -38,8 +40,8 @@ namespace makao
 
     void Game::makeDecks( const int t_size )
     {
-        m_drawingDeck = std::make_unique<Deck>();
-        m_playingDeck = std::make_unique<Deck>();
+        m_drawingDeck = std::make_shared<Deck>();
+        m_playingDeck = std::make_shared<Deck>();
         m_drawingDeck->make( t_size );
     }
 
@@ -47,7 +49,11 @@ namespace makao
     {
         sf::Packet idPacket;
         idPacket << t_id;
-        m_players.at( t_id )->m_socket->send( idPacket );
+        if ( m_players.at( t_id )->m_socket->send( idPacket ) == sf::Socket::Disconnected )
+        {
+            std::cout << "Failed sending id to player " << t_id << "!" << std::endl;
+            throw new LostConnectionException;
+        }
     }
 
     void Game::sendOut() const
@@ -60,7 +66,12 @@ namespace makao
         for ( unsigned int i = 0; i < m_players.size(); ++i )
         {
             std::cout << "Sending to player " << i << std::endl;
-            m_players[ i ]->m_socket->send( gamePacket );
+
+            if ( m_players[ i ]->m_socket->send( gamePacket ) == sf::Socket::Disconnected )
+            {
+                std::cout << "Failed sending game packet to player " << i << "!" << std::endl;
+                throw new LostConnectionException;
+            }
         }
     }
 
@@ -123,20 +134,25 @@ namespace makao
     int Game::getChoice() const
     {
         sf::Packet choicePacket;
-        int choice;
+        int choice = 0;
 
-        getTurnPlayer()->getSocket()->receive( choicePacket );
-        
-        if ( getTurnPlayer()->getState() & Player::Turn )
+        if ( getTurnPlayer()->getSocket()->receive( choicePacket ) == sf::Socket::Done )
         {
-            choicePacket >> choice;
-            std::cout << "Got: " << choice << std::endl;
+            if ( getTurnPlayer()->getState() & Player::Turn )
+            {
+                choicePacket >> choice;
+                std::cout << "Got: " << choice << std::endl;
 
-            return choice;
+                return choice;
+            }
+            else
+            {
+                std::cout << "Not your turn!" << std::endl;
+                return -1;
+            }
         }
         else
         {
-            std::cout << "Not your turn!" << std::endl;
             return -1;
         }
     }
@@ -145,7 +161,10 @@ namespace makao
     {
         try
         {
-            if ( *( getTurnPlayer()->getHand()->at( t_choice ) ) == *( m_playingDeck->peek() ) )
+            auto choosenCard = *( getTurnPlayer()->getHand()->at( t_choice ) );
+            std::cout << "Choosen " << choosenCard.str() << std::endl;
+
+            if ( choosenCard == *( m_playingDeck->peek() ) )
             {
                 m_playingDeck->push( getTurnPlayer()->throwCard( t_choice ) );
                 return true;

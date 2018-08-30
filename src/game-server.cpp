@@ -72,7 +72,7 @@ int main( int argc, char const *argv[] )
 
             if ( selector.wait( sf::seconds( 60 ) ) )
             {
-                for ( unsigned int i = 0; i < game->getPlayerAmount(); i++ )
+                for ( unsigned int i = 0; i < game->getPlayerAmount(); ++i )
                 {
                     if ( selector.isReady( listener ) )
                     {
@@ -95,29 +95,36 @@ int main( int argc, char const *argv[] )
                     }
                 }
                 //==========================================
-                std::cout << "Game started!" << std::endl;
-
-                int turn = 0;
-                while ( true )
+                try
                 {
-                    std::cout << "Now turns: " << turn % game->getPlayerAmount() << std::endl;
-                    game->setTurn( turn % game->getPlayerAmount() );
-                    game->sendOut();
-                    int choice = game->getChoice();
+                    std::cout << "Game started!" << std::endl;
 
-                    if ( game->isValid( choice ) )
+                    int turn = 0;
+                    while ( true )
                     {
-                        turn++;
+                        std::cout << "Now turns: " << turn % game->getPlayerAmount() << std::endl;
+                        game->setTurn( turn % game->getPlayerAmount() );
+                        game->sendOut();
+                        int choice = game->getChoice();
+
+                        if ( game->isValid( choice ) )
+                        {
+                            turn++;
+                        }
+                        else
+                        {
+                            std::cout << "Wrong card!" << std::endl;
+                        }
                     }
-                    else
-                    {
-                        std::cout << "Wrong card!" << std::endl;
-                    }
+
+                    std::cout << "Game over!" << std::endl;
                 }
-                
-                std::cout << "Game over!" << std::endl;
-                me.takenSlots = 0;
+                catch ( std::exception* ex )
+                {
+                    std::cout << "Game over! Reason: " << ex->what() << std::endl;
+                }
                 //==========================================
+                me.takenSlots = 0;
             }
         }
     }
