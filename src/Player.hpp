@@ -16,7 +16,7 @@ namespace makao
         public:
             Player() {}
             Player( int t_id ) : m_id( t_id ) {}
-            ~Player() { delete m_hand; }
+            ~Player() {}
 
             enum State
             {
@@ -28,12 +28,12 @@ namespace makao
                 Ace = 16
             };
 
-            void take( Card* t_card )
+            void take( std::shared_ptr<Card> t_card )
             {
                 m_hand->push( t_card );
             }
 
-            Card* throwCard( int t_cardIndex )
+            std::shared_ptr<Card> throwCard( int t_cardIndex )
             {
                 return m_hand->remove( t_cardIndex );
             }
@@ -58,7 +58,7 @@ namespace makao
                 m_address = t_ip;
             }
 
-            Deck* getHand() const
+            std::shared_ptr<Deck> getHand() const
             {
                 return m_hand;
             }
@@ -85,20 +85,20 @@ namespace makao
 
             friend sf::Packet& operator<<( sf::Packet& packet, const Player* player )
             {
-                return packet << player->m_hand << player->m_stateFlags;
+                return packet << player->m_hand.get() << player->m_stateFlags;
             }
 
             friend sf::Packet& operator>>( sf::Packet& packet, Player& player )
             {
                 int tmp;
-                packet >> player.m_hand >> tmp;
+                packet >> player.m_hand.get() >> tmp;
                 player.m_stateFlags = static_cast<State>( tmp );
                 return packet;
             }
 
             friend Game;
         private:
-            Deck* m_hand = new Deck;
+            std::shared_ptr<Deck> m_hand = std::make_shared<Deck>();
 
             int m_id;
             State m_stateFlags = Clear;

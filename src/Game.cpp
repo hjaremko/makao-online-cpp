@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "Game.hpp"
 #include "Deck.hpp"
 
@@ -6,8 +7,7 @@ namespace makao
 {
     Game::Game()
     {
-        m_drawingDeck = new Deck();
-        m_playingDeck = new Deck();
+        Game( 2 );
     }
 
     Game::Game( int const t_playerAmount )
@@ -16,7 +16,7 @@ namespace makao
         makeDecks( 52 );
         m_drawingDeck->shuffle();
 
-        for ( Player* player : m_players )
+        for ( auto player : m_players )
         {
             m_drawingDeck->dealOut( 5, player );
         }
@@ -26,29 +26,21 @@ namespace makao
 
     Game::~Game()
     {
-        for ( std::vector<Player*>::iterator i = m_players.begin(); i != m_players.end(); ++i )
-        {
-            delete *i;
-        }
-
-        delete m_drawingDeck;
-        delete m_playingDeck;
     }
 
     void Game::makePlayers( int t_playerAmount )
     {
         for ( int i = 0; i < t_playerAmount; ++i )
         {
-            m_players.push_back( new Player( i ) );
+            m_players.push_back( std::make_shared<Player>( i ) );
         }
     }
 
     void Game::makeDecks( const int t_size )
     {
-        m_drawingDeck = new Deck();
+        m_drawingDeck = std::make_unique<Deck>();
+        m_playingDeck = std::make_unique<Deck>();
         m_drawingDeck->make( t_size );
-
-        m_playingDeck = new Deck();
     }
 
     void Game::sendId( const int t_id )
@@ -105,9 +97,9 @@ namespace makao
         std::cout << "Top card: " << m_playingDeck->peek()->str() << std::endl;
     }
 
-    Player* Game::getTurnPlayer() const
+    auto Game::getTurnPlayer() const
     {
-        for ( Player* player : m_players )
+        for ( auto player : m_players )
         {
             if ( player->getState() & Player::Turn )
             {
@@ -115,12 +107,12 @@ namespace makao
             }
         }
 
-        return nullptr;
+        // return nullptr;
     }
 
     void Game::setTurn( int t_id )
     {
-        for ( Player* player : m_players )
+        for ( auto player : m_players )
         {
             player->setState( static_cast<Player::State>( player->getState() & ~Player::Turn ) );
         }
@@ -153,7 +145,7 @@ namespace makao
     {
         try
         {
-            if ( *( getTurnPlayer()->getHand()->at( t_choice )) == *(m_playingDeck->peek() ) )
+            if ( *( getTurnPlayer()->getHand()->at( t_choice ) ) == *( m_playingDeck->peek() ) )
             {
                 m_playingDeck->push( getTurnPlayer()->throwCard( t_choice ) );
                 return true;

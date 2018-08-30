@@ -24,7 +24,7 @@ namespace makao
             void setTurn( int );
             int getChoice() const;
             bool isValid( int );
-            Player* getTurnPlayer() const;
+            auto getTurnPlayer() const;
 
             Player::State getPlayerState( int t_id ) const
             {
@@ -58,12 +58,12 @@ namespace makao
             {
                 packet << game.m_players.size();
 
-                for ( std::vector<Player*>::const_iterator it = game.m_players.begin(); it != game.m_players.end(); ++it )
+                for ( auto it = game.m_players.begin(); it != game.m_players.end(); ++it )
                 {
-                    packet << *it;
+                    packet << ( *it ).get();
                 }
 
-                return packet << game.m_drawingDeck << game.m_playingDeck;
+                return packet << game.m_drawingDeck.get() << game.m_playingDeck.get();
             }
 
             friend sf::Packet& operator>>( sf::Packet& packet, Game& game )
@@ -73,20 +73,20 @@ namespace makao
 
                 for ( int i = 0; i < size; ++i )
                 {
-                    Player* tmp = new Player();
+                    auto tmp = std::make_shared<Player>();
                     packet >> *tmp;
                     game.m_players.push_back( tmp );
                 }
 
-                return packet >> game.m_drawingDeck >> game.m_playingDeck;
+                return packet >> game.m_drawingDeck.get() >> game.m_playingDeck.get();
             }
 
         private:
             void makePlayers( int );
             void makeDecks( int );
 
-            std::vector<Player*> m_players;
-            Deck* m_drawingDeck;
-            Deck* m_playingDeck;
+            std::vector<std::shared_ptr<Player>> m_players;
+            std::unique_ptr<Deck> m_drawingDeck;
+            std::unique_ptr<Deck> m_playingDeck;
     };
 }

@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -std=c++14
-LIBS = -lpdcurses -lsfml-system -lsfml-network
+LIBS = -lsfml-system -lsfml-network
 # NCWINDOWS = Window.o Content.o ContentWindow.o LogWindow.o MenuWindow.o InputForm.o
 # SOBJ = game-server.o $(NCWINDOWS) Server.o ServerPacket.o Game.o Deck.o
 # GOOBJ = game-coordinator.o GameCoordinator.o $(NCWINDOWS) Server.o ServerPacket.o
@@ -21,10 +21,10 @@ clean:
 	$(CC) $(CFLAGS) -c $< -I$(CURSESPATH) -I$(SFMLPATH)/include -I$(SRCPATH)
 
 server: $(SOBJ)
-	$(CC) $(SOBJ) -L$(SFMLPATH)/lib -L$(CURSESPATH) $(LIBS) -o $@
+	$(CC) $(SOBJ) -L$(SFMLPATH)/lib $(LIBS) -o $@
 
 gc: $(GOOBJ)
-	$(CC) $(GOOBJ) -L$(SFMLPATH)/lib -L$(CURSESPATH) $(LIBS) -o $@
+	$(CC) $(GOOBJ) -L$(SFMLPATH)/lib $(LIBS) -o $@
 
 client: $(COBJ)
 	$(CC) $(COBJ) -L$(SFMLPATH)/lib -L$(CURSESPATH) $(LIBS) -o $@

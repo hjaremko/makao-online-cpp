@@ -22,7 +22,7 @@ namespace makao
         {
             for ( int j = Card::Figure::ace; j <= Card::Figure::king; ++j )
             {
-                m_cards.push_back( new Card( static_cast<Card::Suit>( i ), static_cast<Card::Figure>( j ) ) );
+                m_cards.push_back( std::make_shared<Card>( static_cast<Card::Suit>( i ), static_cast<Card::Figure>( j ) ) );
             }
         }
     }
@@ -35,7 +35,7 @@ namespace makao
         std::shuffle( m_cards.begin(), m_cards.end(), rng );
     }
 
-    void Deck::dealOut( int const amount, Player* t_player )
+    void Deck::dealOut( int const amount, std::shared_ptr<Player> t_player )
     {
         for ( int i = 0; i < amount; ++i )
         {
@@ -43,27 +43,27 @@ namespace makao
         }
     }
 
-    Card* Deck::pop()
+    std::shared_ptr<Card> Deck::pop()
     {
-        Card* last = m_cards.back();
+        auto last = m_cards.back();
         m_cards.pop_back();
         return last;
     }
 
-    Card* Deck::remove( int t_cardIndex )
+    std::shared_ptr<Card> Deck::remove( int t_cardIndex )
     {
-        Card* tmp = m_cards.at( t_cardIndex );
+        auto tmp = m_cards.at( t_cardIndex );
         m_cards.erase( m_cards.begin() +  t_cardIndex );
 
         return tmp;
     }
 
-    Card* Deck::peek() const
+    std::shared_ptr<Card> Deck::peek() const
     {
         return m_cards.back();
     }
 
-    void Deck::push( Card* t_card )
+    void Deck::push( std::shared_ptr<Card> t_card )
     {
         m_cards.push_back( t_card );
     }

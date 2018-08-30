@@ -1,6 +1,8 @@
 #include <iostream>
-#include <thread> 
+#include <thread>
+
 #include <SFML/Network.hpp>
+
 #include "Server.hpp"
 #include "ServerPacket.hpp"
 #include "Game.hpp"
@@ -39,6 +41,7 @@ int main( int argc, char const *argv[] )
     std::cout << "Makao Online Server." << std::endl;
 
     sf::UdpSocket socket;
+    // sf::IpAddress gcIp = "192.168.1.11";
     sf::IpAddress gcIp = "127.0.0.1";
     unsigned short gcPort = 54000;
 
@@ -54,8 +57,6 @@ int main( int argc, char const *argv[] )
     std::cout << "Waiting for players..." << std::endl;
 
     // ----- The server -----
-    Game* game;
-
     sf::TcpListener listener;
     
     if ( listener.listen( 55001 ) == sf::Socket::Done )
@@ -64,7 +65,7 @@ int main( int argc, char const *argv[] )
         {
             std::cout << "Listening..." << std::endl;
 
-            game = new Game( me.maxSlots );
+            auto game = std::make_unique<Game>( me.maxSlots );
 
             sf::SocketSelector selector;
             selector.add( listener );
@@ -118,8 +119,6 @@ int main( int argc, char const *argv[] )
                 me.takenSlots = 0;
                 //==========================================
             }
-
-            delete game;
         }
     }
 

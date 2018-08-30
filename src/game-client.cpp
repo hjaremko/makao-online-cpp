@@ -29,9 +29,13 @@ int main( int argc, char const *argv[] )
         clientPort++;
     }
 
-    Server ping( "localhost", clientPort, "**PING**" );
+    // Server ping( "localhost", clientPort, "**PING**" );
+    Server ping( sf::IpAddress::getLocalAddress(), clientPort, "**PING**" );
+    // Server ping( sf::IpAddress::getPublicAddress(), clientPort, "**PING**" );
     ServerPacket packet;
     packet << ping;
+    // sf::IpAddress gameCoordinatorIp = "narolnet.dynu.com";
+    // sf::IpAddress gameCoordinatorIp = "192.168.1.11";
     sf::IpAddress gameCoordinatorIp = "127.0.0.1";
 
     // initscr();
