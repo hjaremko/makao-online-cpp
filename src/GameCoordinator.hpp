@@ -2,7 +2,9 @@
 
 #include <vector>
 #include <iostream>
+
 #include <SFML/Network.hpp>
+
 #include "Server.hpp"
 #include "ServerPacket.hpp"
 

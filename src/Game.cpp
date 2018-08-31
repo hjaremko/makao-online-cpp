@@ -12,7 +12,7 @@ namespace makao
         Game( 2 );
     }
 
-    Game::Game( int const t_playerAmount )
+    Game::Game( const int t_playerAmount )
     {
         makePlayers( t_playerAmount );
         makeDecks( 52 );
@@ -30,7 +30,7 @@ namespace makao
     {
     }
 
-    void Game::makePlayers( int t_playerAmount )
+    void Game::makePlayers( const int t_playerAmount )
     {
         for ( int i = 0; i < t_playerAmount; ++i )
         {
@@ -87,7 +87,7 @@ namespace makao
         std::cout << "Top card: " << m_playingDeck->peek()->str() << std::endl;
     }
 
-    void Game::print( int t_id ) const
+    void Game::print( const int t_id ) const
     {
         for ( int i = 0; i < m_players.size(); ++i )
         {
@@ -99,16 +99,17 @@ namespace makao
             }
             else
             {
-                std::cout << m_players[ i ]->getHand()->getSize() << " cards";
+                std::cout << m_players[ i ]->getHand()->getSize() << " cards ";
             }
 
+            m_players[ i ]->printStates();
             std::cout << std::endl;
         }
 
         std::cout << "Top card: " << m_playingDeck->peek()->str() << std::endl;
     }
 
-    auto Game::getTurnPlayer() const
+    auto Game::getTurnPlayer() const //!!!
     {
         for ( auto player : m_players )
         {
@@ -121,7 +122,7 @@ namespace makao
         // return nullptr;
     }
 
-    void Game::setTurn( int t_id )
+    void Game::setTurn( const int t_id )
     {
         for ( auto player : m_players )
         {
@@ -148,6 +149,7 @@ namespace makao
             else
             {
                 std::cout << "Not your turn!" << std::endl;
+
                 return -1;
             }
         }
@@ -157,26 +159,56 @@ namespace makao
         }
     }
 
-    bool Game::isValid( int t_choice )
+    bool Game::isValid( const int t_choice ) const
     {
         try
         {
             auto choosenCard = *( getTurnPlayer()->getHand()->at( t_choice ) );
             std::cout << "Choosen " << choosenCard.str() << std::endl;
 
-            if ( choosenCard == *( m_playingDeck->peek() ) )
-            {
-                m_playingDeck->push( getTurnPlayer()->throwCard( t_choice ) );
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return ( choosenCard == *( m_playingDeck->peek() ) );
         }
         catch (...)
         {
             return false;
         }
     }
+
+    void Game::makeTurn( const int t_choice )
+    {
+        m_playingDeck->push( getTurnPlayer()->throwCard( t_choice ) );
+    }
+
+    void Game::drawCard( int t_amount )
+    {
+        m_drawingDeck->dealOut( t_amount, getTurnPlayer() );
+    }
+
+    Player::State Game::getPlayerState( const int t_id ) const
+    {
+        return m_players[ t_id ]->getState();
+    }
+
+    int Game::getPlayerAmount() const
+    {
+        return m_players.size();
+    }
+
+    void Game::setPlayerSocket( const int index, sf::TcpSocket* t_socket )
+    {
+        m_players.at( index )->setSocket( t_socket );
+    }
+
+    void Game::setPlayerAddress( const int index, sf::IpAddress t_ip )
+    {
+        m_players.at( index )->setAddress( t_ip );
+    }
+
+    // std::string getPlayerId( int i ) const
+    // {
+        // std::istringstream s;
+        // s << i << "_" << m_players[ i ]->getAddress().toString()
+        //        << "_" << m_players[ i ]->getPort();
+        // return s.str();
+    // }
 }

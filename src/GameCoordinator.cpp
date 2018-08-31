@@ -62,7 +62,7 @@ namespace makao
                 tmpP.send( &m_socket, tmp.ip, tmp.port );
             }
 
-            if ( server->getElapsedTime() > 30.0 )
+            if ( server->getElapsedTime() > 10.0 )
             {
                 std::cerr << server->name << " disconnected." << std::endl;
 

@@ -54,7 +54,6 @@ int main( int argc, char const *argv[] )
     std::thread sendingThread( bs );
     sendingThread.detach();
     
-    std::cout << "Waiting for players..." << std::endl;
 
     // ----- The server -----
     sf::TcpListener listener;
@@ -63,7 +62,8 @@ int main( int argc, char const *argv[] )
     {
         while ( true )
         {
-            std::cout << "Listening..." << std::endl;
+            std::cout << "Waiting for players..." << std::endl;
+            // std::cout << "Listening..." << std::endl;
 
             auto game = std::make_unique<Game>( me.maxSlots );
 
@@ -109,6 +109,12 @@ int main( int argc, char const *argv[] )
 
                         if ( game->isValid( choice ) )
                         {
+                            game->makeTurn( choice );
+                            turn++;
+                        }
+                        else if ( choice < 0 )
+                        {
+                            game->drawCard( 1 );
                             turn++;
                         }
                         else

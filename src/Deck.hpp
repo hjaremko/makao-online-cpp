@@ -1,11 +1,12 @@
 #pragma once
 
-#include <SFML/Network.hpp>
-
-#include "Card.hpp"
 #include <vector>
 #include <iostream>
 #include <memory>
+
+#include <SFML/Network.hpp>
+
+#include "Card.hpp"
 
 namespace makao
 {
@@ -24,16 +25,8 @@ namespace makao
             std::shared_ptr<Card> pop();
             std::shared_ptr<Card> remove( int );
             std::shared_ptr<Card> peek() const;
-
-            std::shared_ptr<Card> at( int i ) const
-            {
-                return  m_cards.at( i );
-            }
-
-            int getSize() const
-            {
-                return m_cards.size();
-            }
+            std::shared_ptr<Card> at( int i ) const;
+            int getSize() const;
 
             friend sf::Packet& operator<<( sf::Packet& packet, const Deck* deck )
             {

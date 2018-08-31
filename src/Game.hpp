@@ -1,58 +1,36 @@
 #pragma once
 
-#include <Player.hpp>
-#include <Deck.hpp>
 #include <vector>
 #include <iostream>
 #include <sstream>
+
+#include <Deck.hpp>
+#include <Player.hpp>
 
 namespace makao
 {
     class Game
     {
-        friend sf::Packet& operator<<( sf::Packet&, const Game& );
-
         public:
             Game();
             Game( int );
             ~Game();
 
             void print() const;
-            void print( int ) const;
+            void print( const int ) const;
             void sendOut() const;
             void sendId( const int );
             void setTurn( int );
+            void setPlayerSocket( int index, sf::TcpSocket* );
+            void setPlayerAddress( int index, sf::IpAddress );
+            void makeTurn( const int );
+            void drawCard( int );
             int getChoice() const;
-            bool isValid( int );
+            int getPlayerAmount() const;
+            Player::State getPlayerState( const int ) const;
             auto getTurnPlayer() const;
+            bool isValid( int ) const;
 
-            Player::State getPlayerState( int t_id ) const
-            {
-                return m_players[ t_id ]->getState();
-            }
-
-            int getPlayerAmount() const
-            {
-                return m_players.size();
-            }
-
-            void setPlayerSocket( int index, sf::TcpSocket* t_socket )
-            {
-                m_players.at( index )->setSocket( t_socket );
-            }
-
-            void setPlayerAddress( int index, sf::IpAddress t_ip )
-            {
-                m_players.at( index )->setAddress( t_ip );
-            }
-            
-            // std::string getPlayerId( int i ) const
-            // {
-                // std::istringstream s;
-                // s << i << "_" << m_players[ i ]->getAddress().toString()
-                //        << "_" << m_players[ i ]->getPort();
-                // return s.str();
-            // }
 
             friend sf::Packet& operator<<( sf::Packet& packet, const Game& game )
             {

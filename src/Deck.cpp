@@ -1,9 +1,10 @@
-#include "Deck.hpp"
-#include "Player.hpp"
 #include <random>
 #include <iostream>
 #include <algorithm>
 #include <ctime>
+
+#include "Deck.hpp"
+#include "Player.hpp"
 
 thread_local std::mt19937 gen{ std::random_device{}() };
  
@@ -12,7 +13,6 @@ T random( T min, T max )
 {
     return std::uniform_int_distribution<T>{ min, max }( gen );
 }
-
 
 namespace makao
 {
@@ -35,9 +35,9 @@ namespace makao
         std::shuffle( m_cards.begin(), m_cards.end(), rng );
     }
 
-    void Deck::dealOut( int const amount, std::shared_ptr<Player> t_player )
+    void Deck::dealOut( int const t_amount, std::shared_ptr<Player> t_player )
     {
-        for ( int i = 0; i < amount; ++i )
+        for ( int i = 0; i < t_amount; ++i )
         {
             t_player->take( pop() );
         }
@@ -61,6 +61,16 @@ namespace makao
     std::shared_ptr<Card> Deck::peek() const
     {
         return m_cards.back();
+    }
+
+    std::shared_ptr<Card> Deck::at( int i ) const
+    {
+        return m_cards.at( i );
+    }
+
+    int Deck::getSize() const
+    {
+        return m_cards.size();
     }
 
     void Deck::push( std::shared_ptr<Card> t_card )

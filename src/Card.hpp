@@ -4,6 +4,8 @@
 #include <array>
 #include <iostream>
 
+#include <SFML/Network.hpp>
+
 namespace makao
 {
     class Card
@@ -34,39 +36,9 @@ namespace makao
                 king
             };
 
-            Card() {}
-            Card( Suit t_suit, Figure t_figure, bool t_special = false ) 
-            : m_suit( t_suit ), m_figure( t_figure ), m_special( t_special )
-            {
-            };
-
-            std::string str() const
-            {
-                std::array<std::string, 4> suits = {  "hearts",
-                                                      "diamonds",
-                                                      "clubs",
-                                                      "spades" };
-
-                std::array<std::string, 13> figures =   {
-                                                            "ace",
-                                                            "two",
-                                                            "three",
-                                                            "four",
-                                                            "five",
-                                                            "six",
-                                                            "seven",
-                                                            "eight",
-                                                            "nine",
-                                                            "ten",
-                                                            "jack",
-                                                            "queen",
-                                                            "king"
-                                                        };
-
-                std::string temp = figures[ m_figure ] + "_" + suits[ m_suit ];
-
-                return temp;
-            }
+            Card();
+            Card( Suit, Figure, bool = false );
+            std::string str() const;
 
             bool operator==( const Card& t_card )
             {
@@ -90,8 +62,8 @@ namespace makao
             }
 
         private:
-            Suit m_suit;
-            Figure m_figure;
-            bool m_special = false;
+            Suit m_suit{ hearts };
+            Figure m_figure{ ace };
+            bool m_special{ false };
     };
 }
