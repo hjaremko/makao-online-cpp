@@ -1,9 +1,9 @@
 #include <iostream>
 #include <exception>
 
+#include "makaoexcept.hpp"
 #include "Game.hpp"
 #include "Deck.hpp"
-#include "LostConnectionException.hpp"
 
 namespace makao
 {
@@ -15,7 +15,7 @@ namespace makao
     Game::Game( const int t_playerAmount )
     {
         makePlayers( t_playerAmount );
-        makeDecks( 52 );
+        makeDecks();
         m_drawingDeck->shuffle();
 
         for ( auto player : m_players )
@@ -38,11 +38,11 @@ namespace makao
         }
     }
 
-    void Game::makeDecks( const int t_size )
+    void Game::makeDecks()
     {
         m_drawingDeck = std::make_shared<Deck>();
         m_playingDeck = std::make_shared<Deck>();
-        m_drawingDeck->make( t_size );
+        m_drawingDeck->make();
     }
 
     void Game::sendId( const int t_id )
@@ -52,32 +52,32 @@ namespace makao
         if ( m_players.at( t_id )->m_socket->send( idPacket ) == sf::Socket::Disconnected )
         {
             std::cout << "Failed sending id to player " << t_id << "!" << std::endl;
-            throw new LostConnectionException;
+            throw LostConnectionException( t_id );
         }
     }
 
     void Game::sendOut() const
     {
-        std::cout << "Sending card info to players..." << std::endl;
+        // std::cout << "Sending card info to players..." << std::endl;
 
         sf::Packet gamePacket;
         gamePacket << *this;
 
         for ( unsigned int i = 0; i < m_players.size(); ++i )
         {
-            std::cout << "Sending to player " << i << std::endl;
+            // std::cout << "Sending to player " << i << std::endl;
 
             if ( m_players[ i ]->m_socket->send( gamePacket ) == sf::Socket::Disconnected )
             {
                 std::cout << "Failed sending game packet to player " << i << "!" << std::endl;
-                throw new LostConnectionException;
+                throw LostConnectionException( i );
             }
         }
     }
 
     void Game::print() const
     {
-        for ( int i = 0; i < m_players.size(); ++i )
+        for ( std::size_t i = 0; i < m_players.size(); ++i )
         {
             std::cout << "Player " << i << " has: ";
             m_players[ i ]->getHand()->print();
@@ -89,7 +89,7 @@ namespace makao
 
     void Game::print( const int t_id ) const
     {
-        for ( int i = 0; i < m_players.size(); ++i )
+        for ( std::size_t i = 0; i < m_players.size(); ++i )
         {
             std::cout << "Player " << i << " has: ";
 
@@ -107,6 +107,8 @@ namespace makao
         }
 
         std::cout << "Top card: " << m_playingDeck->peek()->str() << std::endl;
+        std::cout << "Cards in drawing deck: " << m_drawingDeck->getSize() << std::endl;
+        std::cout << "Cards in playing stack: " << m_playingDeck->getSize() << std::endl;
     }
 
     auto Game::getTurnPlayer() const //!!!
@@ -119,7 +121,7 @@ namespace makao
             }
         }
 
-        // return nullptr;
+        return m_players[ 0 ];
     }
 
     void Game::setTurn( const int t_id )
@@ -135,12 +137,12 @@ namespace makao
     int Game::getChoice() const
     {
         sf::Packet choicePacket;
-        int choice = 0;
 
         if ( getTurnPlayer()->getSocket()->receive( choicePacket ) == sf::Socket::Done )
         {
             if ( getTurnPlayer()->getState() & Player::Turn )
             {
+                int choice = 0;
                 choicePacket >> choice;
                 std::cout << "Got: " << choice << std::endl;
 
@@ -181,7 +183,23 @@ namespace makao
 
     void Game::drawCard( int t_amount )
     {
+        if ( m_drawingDeck->getSize() < t_amount )
+        {
+            std::cout << "Not enough cards to draw! Shuffling." << std::endl;
+            shuffleDecks();
+        }
+
         m_drawingDeck->dealOut( t_amount, getTurnPlayer() );
+    }
+
+    void Game::shuffleDecks()
+    {
+        for ( int i = 0; i != m_playingDeck->getSize() - 1; ++i )
+        {
+            m_drawingDeck->push( m_playingDeck->pop() );
+        }
+
+        m_drawingDeck->shuffle();
     }
 
     Player::State Game::getPlayerState( const int t_id ) const

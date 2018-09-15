@@ -74,7 +74,7 @@ namespace makao
         sf::sleep( sf::milliseconds( 100 ) );
     }
 
-    bool GameCoordinator::receive( auto& t_message )
+    bool GameCoordinator::receive( Server& t_message )
     {
         sf::IpAddress sender;
         ServerPacket packet;

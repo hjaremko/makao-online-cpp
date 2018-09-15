@@ -5,6 +5,7 @@
 
 #include "Deck.hpp"
 #include "Player.hpp"
+#include "makaoexcept.hpp"
 
 thread_local std::mt19937 gen{ std::random_device{}() };
  
@@ -16,7 +17,7 @@ T random( T min, T max )
 
 namespace makao
 {
-    void Deck::make( int const t_size )
+    void Deck::make()
     {
         for ( int i = Card::Suit::hearts; i <= Card::Suit::spades; ++i )
         {
@@ -45,9 +46,16 @@ namespace makao
 
     std::shared_ptr<Card> Deck::pop()
     {
-        auto last = m_cards.back();
-        m_cards.pop_back();
-        return last;
+        if ( !m_cards.empty() )
+        {
+            auto last = m_cards.back();
+            m_cards.pop_back();
+            return last;
+        }
+        else
+        {
+            throw EmptyDeckException();
+        }
     }
 
     std::shared_ptr<Card> Deck::remove( int t_cardIndex )
@@ -80,9 +88,9 @@ namespace makao
 
     void Deck::print() const
     {
-        for ( int i = 0; i < m_cards.size(); ++i )
+        for ( auto& card : m_cards )
         {
-            std::cout << m_cards[ i ]->str() << " ";
+            std::cout << card->str() << " ";
         }
     }
 }

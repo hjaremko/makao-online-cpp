@@ -10,12 +10,6 @@ namespace makao
     class Server
     {
         public:
-            std::string name;
-            sf::IpAddress ip;
-            unsigned short port;
-            int takenSlots;
-            int maxSlots;
-
             Server();
             Server( sf::IpAddress, unsigned short, std::string, int = 4 );
 
@@ -24,6 +18,12 @@ namespace makao
             float getElapsedTime() const;
             void setIp( std::string );
             void restartClock();
+
+            sf::IpAddress ip;
+            unsigned short port;
+            std::string name;
+            int maxSlots;
+            int takenSlots;
 
         private:
             sf::Clock m_timeout;

@@ -19,7 +19,7 @@ namespace makao
             void listen();
             int getActiveServers() const;
             bool bindSocket( const unsigned short );
-            bool receive( auto& );
+            bool receive( Server& );
         
         private:
             sf::UdpSocket m_socket;

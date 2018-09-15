@@ -32,8 +32,8 @@ int main( int argc, char const *argv[] )
     // Server ping( "localhost", clientPort, "**PING**" );
     Server ping( sf::IpAddress::getLocalAddress(), clientPort, "**PING**" );
     // Server ping( sf::IpAddress::getPublicAddress(), clientPort, "**PING**" );
-    ServerPacket packet;
-    packet << ping;
+    ServerPacket pingPacket;
+    pingPacket << ping;
     // sf::IpAddress gameCoordinatorIp = "narolnet.dynu.com";
     // sf::IpAddress gameCoordinatorIp = "192.168.1.11";
     sf::IpAddress gameCoordinatorIp = "127.0.0.1";
@@ -58,7 +58,7 @@ int main( int argc, char const *argv[] )
               << "[q] Exit" << std::endl
               << "=========================================" << std::endl;
 
-    char choice;
+    char choice = 0;
     // while ( ( choice = serverList.selectLoop( 'q' ) ) == 0 )
     while ( ( choice = getch() ) != 'q' )
     {
@@ -68,7 +68,7 @@ int main( int argc, char const *argv[] )
             {
                 servers.clear();
                 // serverList.clear( 2 );
-                packet.send( &socket, gameCoordinatorIp, 54000 );
+                pingPacket.send( &socket, gameCoordinatorIp, 54000 );
                 sf::Clock clock;
                 
                 while ( clock.getElapsedTime().asSeconds() < 1.0 )
@@ -106,7 +106,7 @@ int main( int argc, char const *argv[] )
             default:  //connect to the chosen server
             {
                 // serverList.hide();
-                int serverIndex = choice - 49;
+                unsigned serverIndex = choice - 49;
 
                 if ( serverIndex < servers.size() )
                 {
@@ -135,13 +135,15 @@ int main( int argc, char const *argv[] )
 
                         if ( game.getPlayerState( id ) & Player::Turn )
                         {
-                            int choice = 0;
+                            int cardChoice = 0;
                             sf::Packet choicePacket;
 
                             std::cout << "Your turn!" << std::endl;
                             std::cout << "Choose card >> ";
-                            std::cin >> choice;
-                            choicePacket << choice;
+                            std::cin >> cardChoice;
+                            std::cin.clear();
+                            std::cin.sync();
+                            choicePacket << cardChoice;
                             tcpSocket.send( choicePacket );
                         }
                     }

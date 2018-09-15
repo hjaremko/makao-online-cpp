@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++14
+CFLAGS = -std=c++14 -O2 -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic -Wmisleading-indentation -Wnull-dereference
 LIBS = -lsfml-system -lsfml-network
 # NCWINDOWS = Window.o Content.o ContentWindow.o LogWindow.o MenuWindow.o InputForm.o
 # SOBJ = game-server.o $(NCWINDOWS) Server.o ServerPacket.o Game.o Deck.o

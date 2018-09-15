@@ -29,10 +29,10 @@ class BackgroundSending
         }
 
     private:
+        Server& server;
         sf::UdpSocket& socket;
         sf::IpAddress& ip;
         unsigned short& port;
-        Server& server;
 };
 
 
@@ -70,9 +70,10 @@ int main( int argc, char const *argv[] )
             sf::SocketSelector selector;
             selector.add( listener );
 
-            if ( selector.wait( sf::seconds( 60 ) ) )
+            if ( selector.wait() )
+            // if ( selector.wait( sf::seconds( 60 ) ) )
             {
-                for ( unsigned int i = 0; i < game->getPlayerAmount(); ++i )
+                for ( int i = 0; i < game->getPlayerAmount(); ++i )
                 {
                     if ( selector.isReady( listener ) )
                     {
@@ -100,19 +101,20 @@ int main( int argc, char const *argv[] )
                     std::cout << "Game started!" << std::endl;
 
                     int turn = 0;
+
                     while ( true )
                     {
                         std::cout << "Now turns: " << turn % game->getPlayerAmount() << std::endl;
                         game->setTurn( turn % game->getPlayerAmount() );
                         game->sendOut();
-                        int choice = game->getChoice();
+                        int playerAction = game->getChoice();
 
-                        if ( game->isValid( choice ) )
+                        if ( game->isValid( playerAction ) )
                         {
-                            game->makeTurn( choice );
+                            game->makeTurn( playerAction );
                             turn++;
                         }
-                        else if ( choice < 0 )
+                        else if ( playerAction < 0 )
                         {
                             game->drawCard( 1 );
                             turn++;
@@ -125,9 +127,9 @@ int main( int argc, char const *argv[] )
 
                     std::cout << "Game over!" << std::endl;
                 }
-                catch ( std::exception* ex )
+                catch ( std::exception& e )
                 {
-                    std::cout << "Game over! Reason: " << ex->what() << std::endl;
+                    std::cout << "Game over! Reason: " << e.what() << std::endl;
                 }
                 //==========================================
                 me.takenSlots = 0;

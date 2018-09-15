@@ -17,7 +17,7 @@ namespace makao
         public:
             Deck() {};
 
-            void make( int );
+            void make();
             void shuffle();
             void dealOut( int, std::shared_ptr<Player> );
             void push( std::shared_ptr<Card> );

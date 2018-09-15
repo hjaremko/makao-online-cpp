@@ -30,6 +30,7 @@ namespace makao
             Player::State getPlayerState( const int ) const;
             auto getTurnPlayer() const;
             bool isValid( int ) const;
+            void shuffleDecks();
 
 
             friend sf::Packet& operator<<( sf::Packet& packet, const Game& game )
@@ -61,7 +62,7 @@ namespace makao
 
         private:
             void makePlayers( int );
-            void makeDecks( int );
+            void makeDecks();
 
             std::vector<std::shared_ptr<Player>> m_players;
             std::shared_ptr<Deck> m_drawingDeck{ std::make_shared<Deck>() };
