@@ -62,8 +62,8 @@ namespace makao
             }
 
         private:
-            Suit m_suit{ hearts };
+            Suit   m_suit{ hearts };
             Figure m_figure{ ace };
-            bool m_special{ false };
+            bool   m_special{ false };
     };
 }

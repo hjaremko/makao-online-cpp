@@ -6,7 +6,6 @@
 #include <SFML/Network.hpp>
 
 #include "Server.hpp"
-#include "ServerPacket.hpp"
 
 namespace makao
 {

@@ -29,37 +29,36 @@ namespace makao
     {
         // std::cout << "Listening." << std::endl;
 
-        Server tmp;
+        Server temp;
 
-        if ( receive( tmp ) && tmp.name != "**PING**" )
+        if ( receive( temp ) && temp.name != "**PING**" )
         {
-            auto isPresent = std::find( m_activeServers.begin(), m_activeServers.end(), tmp );
+            auto isPresent = std::find( m_activeServers.begin(), m_activeServers.end(), temp );
 
             if ( isPresent != m_activeServers.end() )
             {
                 // std::cerr << isPresent->name << " tick!" << std::endl;
-                *isPresent = tmp;
+                *isPresent = temp;
                 isPresent->restartClock();
             }
             else
             {
-                std::cerr << tmp.name << " connected." << std::endl;
-                m_activeServers.push_back( tmp );
+                std::cerr << temp.name << " connected." << std::endl;
+                m_activeServers.push_back( temp );
             }
         }
-        else if ( tmp.name == "**PING**" )
+        else if ( temp.name == "**PING**" )
         {
-            std::cerr << tmp.ip.toString() << " requested server list." << std::endl;
+            std::cerr << temp.ip.toString() << " requested server list." << std::endl;
         }
 
-        for ( std::vector<Server>::iterator server = m_activeServers.begin(); 
-              server != m_activeServers.end(); ++server )
+        for ( auto server = m_activeServers.begin(); server != m_activeServers.end(); ++server )
         {
-            if ( tmp.name == "**PING**" )
+            if ( temp.name == "**PING**" )
             {
-                ServerPacket tmpP;
-                tmpP << *server;
-                tmpP.send( &m_socket, tmp.ip, tmp.port );
+                sf::Packet tempPacket;
+                tempPacket << *server;
+                m_socket.send( tempPacket, temp.ip, temp.port );
             }
 
             if ( server->getElapsedTime() > 10.0 )
@@ -74,11 +73,11 @@ namespace makao
         sf::sleep( sf::milliseconds( 100 ) );
     }
 
-    bool GameCoordinator::receive( Server& t_message )
+    bool GameCoordinator::receive( Server& t_server )
     {
         sf::IpAddress sender;
-        ServerPacket packet;
-        unsigned short port;
+        sf::Packet    packet;
+        ushort        port;
 
         // std::cerr << "Waiting for next packet..." << std::endl;
 
@@ -89,9 +88,7 @@ namespace makao
         }
         else
         {
-            // t_message.getFromPacket( packet );
-            packet >> t_message;
-            // std::cerr << "Received: \"" << message.name << "\" from " << sender.toString() << std::endl;
+            packet >> t_server;
 
             return true;
         }

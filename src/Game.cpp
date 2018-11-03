@@ -87,7 +87,7 @@ namespace makao
         std::cout << "Top card: " << m_playingDeck->peek()->str() << std::endl;
     }
 
-    void Game::print( const int t_id ) const
+    void Game::print( const unsigned int t_id ) const
     {
         for ( std::size_t i = 0; i < m_players.size(); ++i )
         {

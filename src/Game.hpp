@@ -17,7 +17,7 @@ namespace makao
             ~Game();
 
             void print() const;
-            void print( const int ) const;
+            void print( const unsigned int ) const;
             void sendOut() const;
             void sendId( const int );
             void setTurn( int );

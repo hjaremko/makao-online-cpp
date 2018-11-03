@@ -4,16 +4,17 @@
 #include <SFML/Network.hpp>
 
 #include "Server.hpp"
-#include "ServerPacket.hpp"
 #include "Game.hpp"
 
 using namespace makao;
+using ushort = unsigned short;
 
+template <class PacketType>
 class BackgroundSending
 {
     public:
-        BackgroundSending( Server& t_server, sf::UdpSocket& s, sf::IpAddress& i, unsigned short& po ) :
-                           server( t_server ), socket( s ), ip( i ), port( po ) {}
+        BackgroundSending( PacketType& t_info, sf::UdpSocket& t_socket, sf::IpAddress& t_ip, ushort& t_port ) :
+                           m_packetInfo( t_info ), m_socket( t_socket ), m_recipientAddress( t_ip ), m_recipientPort( t_port ) {}
 
         void operator()() const
         {
@@ -21,18 +22,18 @@ class BackgroundSending
 
             while ( true )
             {
-                ServerPacket serverPacket;
-                serverPacket << server;
-                serverPacket.send( &socket, ip, port );
+                sf::Packet packet;
+                packet << m_packetInfo;
+                m_socket.send( packet, m_recipientAddress, m_recipientPort );
                 sf::sleep( sf::milliseconds( 500 ) );
             }
         }
 
     private:
-        Server& server;
-        sf::UdpSocket& socket;
-        sf::IpAddress& ip;
-        unsigned short& port;
+        PacketType&     m_packetInfo;
+        sf::UdpSocket&  m_socket;
+        sf::IpAddress&  m_recipientAddress;
+        ushort&         m_recipientPort;
 };
 
 
@@ -40,17 +41,16 @@ int main( int argc, char const *argv[] )
 {
     std::cout << "Makao Online Server." << std::endl;
 
-    sf::UdpSocket socket;
-    // sf::IpAddress gcIp = "192.168.1.11";
-    sf::IpAddress gcIp = "127.0.0.1";
-    unsigned short gcPort = 54000;
+    sf::UdpSocket gcSocket;
+    // sf::IpAddress gcIp   = "192.168.1.11";
+    sf::IpAddress gcIp   = "127.0.0.1";
+    ushort        gcPort = 54000;
 
-    // socket.bind( 56000 );
-    socket.setBlocking( false );
-    // Server me( recipient, port, argv[ 1 ], 2 );
-    Server me( gcIp, gcPort, "serwer", 2 );
+    gcSocket.setBlocking( false );
+    // Server me( sf::IpAddress::getLocalAddress(), gcport, argv[ 1 ], 2 );
+    Server me( sf::IpAddress::getLocalAddress(), gcPort, "serwer", 2 );
 
-    BackgroundSending bs( me, socket, gcIp, gcPort );
+    BackgroundSending<Server> bs( me, gcSocket, gcIp, gcPort );
     std::thread sendingThread( bs );
     sendingThread.detach();
     
@@ -63,7 +63,6 @@ int main( int argc, char const *argv[] )
         while ( true )
         {
             std::cout << "Waiting for players..." << std::endl;
-            // std::cout << "Listening..." << std::endl;
 
             auto game = std::make_unique<Game>( me.maxSlots );
 
@@ -132,6 +131,7 @@ int main( int argc, char const *argv[] )
                     std::cout << "Game over! Reason: " << e.what() << std::endl;
                 }
                 //==========================================
+
                 me.takenSlots = 0;
             }
         }
