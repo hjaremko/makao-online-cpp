@@ -17,7 +17,7 @@ public:
     void make();
     void shuffle();
     void deal_out( int, const std::shared_ptr<player>& );
-    void push(const std::shared_ptr<card>& );
+    void push( const std::shared_ptr<card>& );
     void print() const;
     std::shared_ptr<card> pop();
     std::shared_ptr<card> remove( unsigned int );
@@ -27,7 +27,7 @@ public:
 
     friend sf::Packet& operator<<( sf::Packet& packet, const deck& d )
     {
-        packet << static_cast<int>(d.cards_.size());
+        packet << static_cast<int>( d.cards_.size() );
 
         for ( const auto& m_card : d.cards_ )
         {

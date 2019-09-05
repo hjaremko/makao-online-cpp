@@ -8,6 +8,8 @@ if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_EXTENSIONS OFF)
     set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+    include("cmake/clang-tools.cmake")
 endif()
 
 #set(SFML_STATIC_LIBRARIES TRUE)

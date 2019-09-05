@@ -94,4 +94,4 @@ void player::print_states() const
         std::cout << "jack";
     }
 }
-}
+} // namespace makao

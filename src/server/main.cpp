@@ -1,6 +1,5 @@
 #include "makao-online/server/game.hpp"
 #include "makao-online/server/server.hpp"
-#include "makao-online/network_interface.hpp"
 
 #include <SFML/Network.hpp>
 #include <iostream>

@@ -2,7 +2,7 @@ add_library(project_warnings INTERFACE)
 
 if (MSVC)
     target_compile_options(project_warnings INTERFACE /W4)
-else()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_compile_options(project_warnings
                          INTERFACE
                          -Wall
@@ -25,7 +25,15 @@ else()
                          -Wdouble-promotion
                          -Wformat=2
                          )
-endif()
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    target_compile_options(project_warnings
+                         INTERFACE
+                         -Weverything
+                         -Wno-padded
+                         -Wno-c++98-compat
+                         -Wno-c++98-compat-pedantic
+                         )
+endif ()
 
 add_subdirectory(client)
 add_subdirectory(coordinator)

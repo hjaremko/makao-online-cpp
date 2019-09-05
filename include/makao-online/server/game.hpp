@@ -33,7 +33,7 @@ public:
 
     friend sf::Packet& operator<<( sf::Packet& packet, const game& game )
     {
-        packet << static_cast<int>(game.players_.size());
+        packet << static_cast<int>( game.players_.size() );
 
         for ( const auto& player : game.players_ )
         {

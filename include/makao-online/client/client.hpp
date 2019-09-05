@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Network.hpp>
-#include <makao-online/server/server.hpp>
+#include "makao-online/server/server.hpp"
 #include <vector>
 
 namespace makao

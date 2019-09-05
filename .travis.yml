@@ -1,0 +1,103 @@
+language: cpp
+
+stages:
+  - build
+#  - tidy
+
+jobs:
+  include:
+#    - stage: tidy
+#      dist: bionic
+#      script:
+#        - cd build
+    - stage: build
+      os: linux
+      dist: bionic
+      compiler: gcc
+      addons:
+        apt:
+          packages:
+            - libglu1-mesa-dev
+            - freeglut3-dev
+            - mesa-common-dev
+            - libfreetype6-dev
+            - libxrandr-dev
+            - libudev-dev
+            - libogg-dev
+            - libflac-dev
+            - libvorbis-dev
+            - libopenal-dev
+      install:
+        - mkdir SFML
+        - git clone https://github.com/SFML/SFML.git SFML
+        - cd SFML
+        - git checkout 2.5.1
+        - cmake -DCMAKE_INSTALL_PREFIX=../SFML-gcc
+        - cmake --build . --target install
+      script:
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DSFML_DIR="/home/travis/build/hjaremko/makao-online/SFML-gcc/lib/cmake/SFML/" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        - cmake --build .
+    - stage: build
+      os: linux
+      dist: bionic
+      compiler: clang
+      addons:
+        apt:
+          packages:
+            - libglu1-mesa-dev
+            - freeglut3-dev
+            - mesa-common-dev
+            - libfreetype6-dev
+            - libxrandr-dev
+            - libudev-dev
+            - libogg-dev
+            - libflac-dev
+            - libvorbis-dev
+            - libopenal-dev
+      install:
+        - mkdir SFML
+        - git clone https://github.com/SFML/SFML.git SFML
+        - cd SFML
+        - git checkout 2.5.1
+        - cmake -DCMAKE_INSTALL_PREFIX=../SFML-clang
+        - cmake --build . --target install
+      script:
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DSFML_DIR="/home/travis/build/hjaremko/makao-online/SFML-clang/lib/cmake/SFML/"
+        - cmake --build .
+        - make clang-tidy
+    - stage: build
+      os: windows
+      install:
+        - mkdir SFML
+        - git clone https://github.com/SFML/SFML.git SFML
+        - cd SFML
+        - git checkout 2.5.1
+        - cmake -DCMAKE_INSTALL_PREFIX=../SFML-win
+        - cmake --build . --target install
+      script:
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DSFML_DIR="C:/Users/travis/build/hjaremko/makao-online/SFML-win/lib/cmake/SFML/"
+        - cmake --build .
+    - stage: build
+      os: osx
+      install:
+        - mkdir SFML
+        - git clone https://github.com/SFML/SFML.git SFML
+        - cd SFML
+        - git checkout 2.5.1
+        - cmake -DCMAKE_INSTALL_PREFIX=../SFML-osx
+        - sudo cmake --build . --target install
+      script:
+        - cd ..
+        - mkdir build
+        - cd build
+        - cmake .. -DSFML_DIR="/Users/travis/build/hjaremko/makao-online/SFML-osx/lib/cmake/SFML/"
+        - cmake --build .
