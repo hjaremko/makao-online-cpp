@@ -1,147 +1,134 @@
-#include "makao-online/server/game.hpp"
-#include "makao-online/server/server.hpp"
+#include "game_state.hpp"
 
 #include <SFML/Network.hpp>
 #include <iostream>
-//#include <sstream>
-#include <vector>
+#include <thread>
 
 using namespace makao;
-using ushort = unsigned short;
 
-int main( int /*argc*/, const char* /*argv*/[] )
+struct background_receiver
 {
-    sf::UdpSocket socket;
-    sf::TcpSocket tcp_socket;
-    std::vector<server> servers;
-    ushort client_port = 53000;
-
-    // std::istringstream portStream( argv[ 1 ] );
-    // portStream >> client_port;
-
-    socket.setBlocking( false );
-
-    while ( socket.bind( client_port ) != sf::Socket::Done )
+    explicit background_receiver( sf::TcpSocket& tcp_socket, bool& running )
+        : tcp_socket( tcp_socket ), running( running )
     {
-        std::cerr << "Error binding socket!" << std::endl;
-        std::cerr << "Trying next port." << std::endl;
-        client_port++;
     }
 
-    server ping( sf::IpAddress::getLocalAddress(), client_port, "__PING__" );
-    // server ping( sf::IpAddress::getPublicAddress(), client_port, "__PING__" );
+    void operator()()
+    {
+        while ( running )
+        {
+            sf::Packet game_info_packet;
+            auto status = tcp_socket.receive( game_info_packet );
 
-    sf::Packet ping_packet;
-    ping_packet << ping;
+            if ( status != sf::Socket::Done )
+            {
+                running = false;
+                return;
+            }
+            //            else
+            //            {
+            //                std::cout << "received\n";
+            //            }
 
-    // sf::IpAddress coordinator_ip_ = "narolnet.dynu.com";
-    // sf::IpAddress coordinator_ip_ = "192.168.1.11";
-    sf::IpAddress coordinator_ip = "127.0.0.1";
+            auto game_state_str = std::string();
+            auto your_id = 0;
 
-    std::cout << "===== Makao Online Makeshift Client =====" << std::endl
-              << "[0] Refresh" << std::endl
-              << "[q] Exit" << std::endl
-              << "=========================================" << std::endl;
+            game_info_packet >> your_id >> game_state_str;
 
-    char choice = 0;
+            const auto last_state { current_state };
+            current_state.deserialize( game_state_str );
 
+            if ( game_state_str == last_state.serialize() )
+            {
+                continue;
+            }
+
+            std::cout << "You are player " << your_id << "\n";
+            std::cout << "Turning player: " << current_state.turning_player_ << "\n\n";
+            std::cout << "Deck size:      " << current_state.current_deck_.size() << '\n';
+            std::cout << "Stack size:     " << current_state.current_stack_.size() << '\n';
+
+            for ( auto i = 0u; i < current_state.current_hands_.size(); ++i )
+            {
+                std::cout << "Player " << i << ": \n\t";
+
+                if ( i == your_id )
+                {
+                    current_state.current_hands_.at( your_id ).print();
+                    std::cout << std::endl;
+                }
+                else
+                {
+                    current_state.current_hands_.at( i ).print_concealed();
+                }
+            }
+
+            std::cout << "TOP CARD: " << current_state.current_stack_.top().to_string()
+                      << std::endl;
+        }
+    }
+
+    sf::TcpSocket& tcp_socket;
+    game_state current_state;
+    bool& running;
+};
+
+int main()
+{
+    bool running { true };
+    sf::TcpSocket tcp_socket;
+
+    auto status = tcp_socket.connect( "127.0.0.1", 55001 );
+
+    if ( status != sf::Socket::Done )
+        return 1;
+
+    background_receiver receiver( tcp_socket, running );
+    std::thread receiving_thread( receiver );
+
+    std::cout << "[1] Draw\n";
+    std::cout << "[2] Discard\n";
+
+    auto choice = 0;
     while ( ( choice = std::cin.get() ) != 'q' )
     {
+        auto action_packet { sf::Packet {} };
         switch ( choice )
         {
-        case '0':
+        case '1':
         {
-            sf::Clock clock;
-
-            servers.clear();
-            socket.send( ping_packet, coordinator_ip, 54000 );
-
-            while ( static_cast<double>( clock.getElapsedTime().asSeconds() ) < 1.0 )
-            {
-                sf::IpAddress sender;
-                sf::Packet packet;
-                ushort port;
-
-                if ( socket.receive( packet, sender, port ) == sf::Socket::Done )
-                {
-                    server tmp;
-
-                    packet >> tmp;
-                    servers.push_back( tmp );
-                    clock.restart();
-
-                    int i = 1;
-                    for ( server& s : servers )
-                    {
-                        std::cout << "[" << i << "] " << s.get_info() << std::endl;
-                        i++;
-                    }
-                }
-                // else
-                // {
-                //     // std::cerr << "Error receiving packet." << std::endl;
-                // }
-            }
-
+            action_packet << "draw";
+            status = tcp_socket.send( action_packet );
             break;
         }
-        // case '1':
-        // case -1:
-        // break;
-        default: // connect to the chosen server
+        case '2':
         {
-            auto server_index = static_cast<unsigned int>( choice - 49 );
+            std::cout << "Your discard > ";
+            auto discard { 0 };
+            std::cin >> discard;
 
-            if ( server_index < servers.size() )
-            {
-                std::cout << "Game started!" << std::endl;
-
-                sf::Packet game_packet;
-                sf::Packet id_packet;
-                int id = 0;
-
-                std::cout << "Connecting to " << servers[ server_index ].ip.toString() << std::endl;
-                tcp_socket.connect( servers[ server_index ].ip.toString(), 55001 );
-                std::cout << "Waiting for id..." << std::endl;
-                tcp_socket.receive( id_packet );
-                id_packet >> id;
-                std::cout << "You are player " << id << std::endl;
-
-                while ( true )
-                {
-                    game game;
-
-                    std::cout << "Waiting for game packet..." << std::endl;
-                    tcp_socket.receive( game_packet );
-                    std::cout << "Got the packet." << std::endl;
-                    game_packet >> game;
-
-                    game.print( id );
-
-                    if ( game.get_player_state( id ) & player::turn )
-                    {
-                        int card_choice = 0;
-                        sf::Packet choice_packet;
-
-                        std::cout << "Your turn!" << std::endl;
-                        std::cout << "Choose card >> ";
-
-                        std::cin >> card_choice;
-                        std::cin.clear();
-                        std::cin.sync();
-
-                        choice_packet << card_choice;
-                        tcp_socket.send( choice_packet );
-                    }
-                }
-            }
-
-            std::cout << "game over!" << std::endl;
-
+            action_packet << ( "discard " + std::to_string( discard ) );
+            status = tcp_socket.send( action_packet );
             break;
         }
+        case '\n':
+            break;
+        default:
+            std::cout << "Unknown action\n";
+            break;
+        }
+
+        if ( status != sf::Socket::Done )
+        {
+            running = false;
+            break;
         }
     }
+
+    running = false;
+
+    if ( receiving_thread.joinable() )
+        receiving_thread.join();
 
     return 0;
 }

@@ -1,4 +1,4 @@
-#include "makao-online/coordinator/game_coordinator.hpp"
+#include "coordinator/game_coordinator.hpp"
 
 namespace makao
 {
