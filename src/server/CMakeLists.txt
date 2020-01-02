@@ -2,11 +2,11 @@ project(makao_server)
 
 set(SOURCE_FILES
         main.cpp
-        server.cpp
-        game.cpp
-        player.cpp
         ../card.cpp
         ../deck.cpp
+        system.cpp
+        game_manager.cpp
+        sfml_network.cpp
         )
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)

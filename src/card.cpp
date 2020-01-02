@@ -1,22 +1,31 @@
 #include "makao-online/card.hpp"
 
+#include <unordered_map>
+
 namespace makao
 {
-card::card() = default;
+const std::unordered_map<card::suit, std::string> suit_to_str { { card::suit::hearts, "hearts" },
+                                                                { card::suit::diamonds,
+                                                                  "diamonds" },
+                                                                { card::suit::clubs, "clubs" },
+                                                                { card::suit::spades, "spades" } };
 
-card::card( suit s, figure fig, bool special ) : suit_( s ), figure_( fig ), is_special_( special )
+const std::unordered_map<card::figure, std::string> figure_to_str {
+    { card::figure::ace, "ace" },     { card::figure::two, "two" },
+    { card::figure::three, "three" }, { card::figure::four, "four" },
+    { card::figure::five, "five" },   { card::figure::six, "six" },
+    { card::figure::seven, "seven" }, { card::figure::eight, "eight" },
+    { card::figure::nine, "nine" },   { card::figure::ten, "ten" },
+    { card::figure::jack, "jack" },   { card::figure::queen, "queen" },
+    { card::figure::king, "king" }
+};
+
+card::card( suit s, figure fig ) : suit_( s ), figure_( fig )
 {
 }
 
 std::string card::to_string() const
 {
-    std::array<std::string, 4> suits = { "hearts", "diamonds", "clubs", "spades" };
-
-    std::array<std::string, 13> figures = { "ace",  "two",   "three", "four", "five",
-                                            "six",  "seven", "eight", "nine", "ten",
-                                            "jack", "queen", "king" };
-
-    std::string temp = figures[ figure_ ] + "_" + suits[ suit_ ];
-    return temp;
+    return { figure_to_str.at( figure_ ) + "_" + suit_to_str.at( suit_ ) };
 }
 } // namespace makao

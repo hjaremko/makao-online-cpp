@@ -1,7 +1,7 @@
-#include "makao-online/server/game.hpp"
+#include "makao-online/server/old_game.hpp"
 
 #include "makao-online/deck.hpp"
-#include "makao-online/lost_connection.hpp"
+#include "makao-online/lost_connection_exception.hpp"
 
 #include <exception>
 #include <iostream>

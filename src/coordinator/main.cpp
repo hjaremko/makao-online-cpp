@@ -1,4 +1,5 @@
-#include "makao-online/coordinator/game_coordinator.hpp"
+//TODO: rewrite
+#include "coordinator/game_coordinator.hpp"
 
 #include <iostream>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "makao-online/deck.hpp"
-#include "player.hpp"
+#include "old_player.hpp"
 
 #include <iostream>
 #include <sstream>

@@ -2,7 +2,7 @@ project(makao_coordinator)
 
 set(SOURCE_FILES main.cpp
         game_coordinator.cpp
-        ../server/server.cpp
+        ../server/old_server.cpp
         )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
